@@ -4,7 +4,7 @@ project(opz)
 # Check for C++17
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(opz src/main.cpp)
+# add_executable(opz src/main.cpp)
 
 cmake_minimum_required(VERSION 3.1)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
@@ -36,6 +36,16 @@ if(MSVC)
             SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/cpython
             CONFIGURE_COMMAND ""
             BUILD_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && MSBuild.exe /p:Configuration=${CPYTHON_BUILD_TYPE} /property:Platform=${CPYTHON_PLATFORM} "PCBuild/python.vcxproj" /nologo /verbosity:minimal /consoleloggerparameters:summar
+            INSTALL_COMMAND ""
+            TEST_COMMAND ""
+            )
+
+elseif(APPLE)
+    ExternalProject_Add(CPYTHON
+            DOWNLOAD_COMMAND ""
+            SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/cpython
+            CONFIGURE_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && ./configure --disable-static --enable-shared CPPFLAGS=-I/opt/X11/include
+            BUILD_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && make
             INSTALL_COMMAND ""
             TEST_COMMAND ""
             )
