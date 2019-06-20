@@ -6,3 +6,6 @@
 	path = libs/pybind11
 	url = https://github.com/pybind/pybind11.git
 	branch = v2.3
+[submodule "rez"]
+	path = pylibs/rez
+	url = git@github.com:opcg/rez.git
