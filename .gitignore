@@ -5,3 +5,5 @@
 !.idea/vcs.iml
 
 cmake-build-debug/
+
+venv/
