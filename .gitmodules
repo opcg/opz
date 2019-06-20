@@ -1,0 +1,4 @@
+[submodule "python"]
+	path = libs/cpython
+	url = https://github.com/python/cpython.git
+	branch = 3.8
