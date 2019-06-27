@@ -4,6 +4,8 @@
 !.idea/opz.iml
 !.idea/vcs.iml
 
+.DS_Store
+
 cmake-build-debug/
 
 venv/

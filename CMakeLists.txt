@@ -41,10 +41,31 @@ if(MSVC)
             )
 
 elseif(APPLE)
+
+    # brew --prefix <dep>
+
+    execute_process(COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE macos_sdk)
+    string(STRIP ${macos_sdk} macos_sdk)
+    set(tk_headers ${macos_sdk}/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers)
+    # /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk
+    message("TK Headers are in ${tk_headers}")
+#    if("${macos_sdk}" STREQUAL "0")
+#        message(FATAL_ERROR "Failed to Get macos_sdk location")
+#    endif()
+
+    execute_process(COMMAND brew --prefix openssl OUTPUT_VARIABLE brew_openssl)
+    string(STRIP ${brew_openssl} brew_openssl)
+    #execute_process(brew --prefix openssl RESULT_VARIABLE brew_openssl)
+    #execute_process(brew --prefix openssl RESULT_VARIABLE brew_openssl)
+    message("Brew Openssl is ${brew_openssl}")
+#    if("${brew_openssl}" STREQUAL "0")
+#        message(FATAL_ERROR "Failed to Get brew_openssl location")
+#    endif()
+
     ExternalProject_Add(CPYTHON
             DOWNLOAD_COMMAND ""
             SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/cpython
-            CONFIGURE_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && ./configure --disable-static --enable-shared CPPFLAGS=-I/opt/X11/include
+            CONFIGURE_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && ./configure --enable-shared --with-openssl=${brew_openssl} --enable-ipv6 --without-ensurepip --with-dtrace CPPFLAGS=-I${tk_headers}
             BUILD_COMMAND cd ${CMAKE_SOURCE_DIR}/libs/cpython && make
             INSTALL_COMMAND ""
             TEST_COMMAND ""
@@ -69,6 +90,11 @@ if(MSVC)
     else()
         set(CPYTHON_BIN ${CMAKE_SOURCE_DIR}/libs/cpython/PCBuild/${CPYTHON_BUILD_DIR}/python38.dll)
     endif()
+elseif(APPLE)
+    set(CPYTHON_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/cpython/Include ${CMAKE_SOURCE_DIR}/libs/cpython)
+    set(CPYTHON_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/libs/cpython)
+    set(CPYTHON_LIBRARY libpython3.8.dylib)
+    set(CPYTHON_BIN ${CMAKE_SOURCE_DIR}/libs/cpython/libpython3.8.dylib)
 else()
     set(CPYTHON_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/cpython/Include ${CMAKE_SOURCE_DIR}/libs/cpython)
     set(CPYTHON_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/libs/cpython)
