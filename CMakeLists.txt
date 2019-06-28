@@ -153,25 +153,24 @@ add_custom_command(
         -E copy_if_different ${CPYTHON_BIN} $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
 
-# Copy our python sources to the build folder
-add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND}
-        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python/opz $<TARGET_FILE_DIR:${PROJECT_NAME}>/opz
-)
-
-add_custom_command(
-        TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND}
-        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/pylib/rez $<TARGET_FILE_DIR:${PROJECT_NAME}>/rez
-)
-
 # Copy the Python stdlib into the build folder (needed by the embedded python)
 add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
         -E copy_directory ${CPYTHON_STDLIB_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib
+)
+
+add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python/opz $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib/site-packages/opz
+)
+
+add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/pylibs/rez/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib/site-packages
 )
