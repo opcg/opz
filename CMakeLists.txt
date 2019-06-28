@@ -174,3 +174,11 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND}
         -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/pylibs/rez/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib/site-packages
 )
+
+#COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "$ORIGIN"
+if (APPLE)
+    add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change /usr/local/lib/libpython3.8.dylib @executable_path/libpython3.8.dylib
+            $<TARGET_FILE:opz>)
+endif()
