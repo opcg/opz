@@ -103,20 +103,28 @@ else()
 endif()
 
 # Add the pybind11 library (optional)
-ExternalProject_Add(PYBIND
-        DOWNLOAD_COMMAND ""
-        SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/pybind11
-        CMAKE_ARGS -DPYBIND11_TEST=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHONLIBS_FOUND=ON -DPYTHON_MODULE_EXTENSION=.lib -DPYTHON_LIBRARY=${CMAKE_SOURCE_DIR}/libs/cpython/PCBuild/win32/python38_d.lib -DPYTHON_INCLUDE_DIR=${CMAKE_SOURCE_DIR}/libs/cpython/PCBuild/win32
-        BUILD_COMMAND cmake --build . --config ${CMAKE_BUILD_TYPE}
-        INSTALL_COMMAND ""
-        TEST_COMMAND ""
-        )
+#ExternalProject_Add(PYBIND
+#        DOWNLOAD_COMMAND ""
+#        SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs/pybind11
+#        CMAKE_ARGS -DPYBIND11_TEST=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHONLIBS_FOUND=ON -DPYTHON_MODULE_EXTENSION=.lib -DPYTHON_LIBRARY=${CMAKE_SOURCE_DIR}/libs/cpython/PCBuild/win32/python38_d.lib -DPYTHON_INCLUDE_DIR=${CMAKE_SOURCE_DIR}/libs/cpython/PCBuild/win32
+#        BUILD_COMMAND cmake --build . --config ${CMAKE_BUILD_TYPE}
+#        INSTALL_COMMAND ""
+#        TEST_COMMAND ""
+#        )
+
+if(MSVC)
+    set(PYBIND11_CPP_STANDARD /std:c++latest)
+else()
+    set(PYBIND11_CPP_STANDARD -std=c++1z)
+endif()
+
+add_subdirectory(libs/pybind11)
 
 set(PYBIND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/libs/pybind11/include)
 
 # Source and header files
-FILE(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-FILE(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
+FILE(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.cpp)
+FILE(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h)
 
 # Linking directories
 link_directories(${CPYTHON_LIBRARY_DIR})
@@ -128,12 +136,12 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX=1)
 
 # Dependencies
-add_dependencies(${PROJECT_NAME} PYBIND)
+# add_dependencies(${PROJECT_NAME} PYBIND)
 add_dependencies(${PROJECT_NAME} CPYTHON)
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PRIVATE ${CPYTHON_INCLUDE_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE ${PYBIND_INCLUDE_DIR})
+# target_include_directories(${PROJECT_NAME} PRIVATE ${PYBIND_INCLUDE_DIR})
 
 # On MSVC build, the python library is automatically linked (crazy I know)
 if(NOT MSVC)
@@ -145,12 +153,15 @@ if(MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
 endif()
 
+target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::embed)
+
+
 # Copy Python DLL to the build folder if different
 add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
-        -E copy_if_different ${CPYTHON_BIN} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        -E copy_if_different ${CPYTHON_BIN} $<TARGET_FILE_DIR:${PROJECT_NAME}>/python
 )
 
 # Copy the Python stdlib into the build folder (needed by the embedded python)
@@ -158,27 +169,27 @@ add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
-        -E copy_directory ${CPYTHON_STDLIB_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib
+        -E copy_directory ${CPYTHON_STDLIB_DIR} $<TARGET_FILE_DIR:${PROJECT_NAME}>/python/lib
 )
 
 add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
-        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python/opz $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib/site-packages/opz
+        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/python/opz $<TARGET_FILE_DIR:${PROJECT_NAME}>/python/lib/site-packages/opz
 )
 
 add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND}
-        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/pylibs/rez/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/lib/site-packages
+        -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/pylibs/rez/src $<TARGET_FILE_DIR:${PROJECT_NAME}>/python/lib/site-packages
 )
 
 #COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "$ORIGIN"
 if (APPLE)
     add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change /usr/local/lib/libpython3.8.dylib @executable_path/libpython3.8.dylib
+            COMMAND ${CMAKE_INSTALL_NAME_TOOL} -change /usr/local/lib/libpython3.8.dylib @executable_path/python/libpython3.8.dylib
             $<TARGET_FILE:opz>)
 endif()
