@@ -3,7 +3,7 @@
 # on this file format.
 
 [[build]]
-application_name = "app"
+application_name = "opz"
 
 [[embedded_python_config]]
 raw_allocator = "jemalloc"
