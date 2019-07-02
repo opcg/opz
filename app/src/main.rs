@@ -1,5 +1,8 @@
 use pyembed::{default_python_config, MainPythonInterpreter};
 
+extern crate clap;
+use clap::App;
+
 fn main() {
     // The following code is in a block so the MainPythonInterpreter is destroyed in an
     // orderly manner, before process exit.

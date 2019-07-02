@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 jemallocator-global = { version = "0.3", optional = true }
 pyembed = { path = "pyembed" }
+clap = "2"
 
 [features]
 default = []
