@@ -21,6 +21,7 @@ raw_allocator = "jemalloc"
 [[embedded_python_config]]
 build_target = "x86_64-pc-windows-msvc"
 raw_allocator = "system"
+sys_paths = ["$ORIGIN/lib"]
 
 [[packaging_rule]]
 type = "stdlib-extensions-policy"
@@ -28,26 +29,6 @@ type = "stdlib-extensions-policy"
 # Package all available extension modules from the Python distribution.
 # The Python interpreter will be fully featured.
 policy = "all"
-
-# Only package the minimal set of extension modules needed to initialize
-# a Python interpreter. Many common packages in Python's standard
-# library won't work with this setting.
-# policy = "minimal"
-
-# Only package extension modules that don't require linking against
-# non-Python libraries. e.g. will exclude support for OpenSSL, SQLite3,
-# other features that require external libraries.
-# policy = "no-libraries"
-
-# Explicit list of extension modules from the distribution to include.
-# [[packaging_rule]]
-# type = "stdlib-extensions-explicit-includes"
-# includes = ["binascii", "errno", "itertools", "math", "select", "_socket"]
-
-# Explicit list of extension modules from the distribution to exclude.
-# [[packaging_rule]
-# type = "stdlib-extensions-explicit-excludes"
-# excludes = ["_ssl"]
 
 # Package the entire Python standard library without sources.
 [[packaging_rule]]
@@ -59,22 +40,21 @@ include_source = false
 type = "write-license-files"
 path = ""
 
-# Package .py files discovered in a local directory.
-# [[packaging_rule]]
-# type = "package-root"
-# path = "/src/mypackage"
-# packages = ["foo", "bar"]
+[[packaging_rule]]
+type = "package-root"
+path = "src/python"
+packages = ["opz"]
+
+[[packaging_rule]]
+type = "package-root"
+path = "pylibs/rez/src"
+packages = ["rez", "rezplugins"]
+install_location = "app-relative:lib"
 
 # Package things from a populated virtualenv.
 # [[packaging_rule]]
 # type = "virtualenv"
 # path = "/path/to/venv"
-
-# Filter all resources collected so far through a filter of names
-# in a file.
-# [[packaging_rule]]
-# type = "filter-include"
-# files = ["/path/to/filter-file"]
 
 # How Python should run by default. This is only needed if you
 # call ``run()``. For applications customizing how the embedded
