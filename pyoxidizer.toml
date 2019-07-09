@@ -19,9 +19,11 @@ raw_allocator = "jemalloc"
 
 # Windows doesn't support jemalloc.
 [[embedded_python_config]]
-build_target = "x86_64-pc-windows-msvc"
+build_target = "x86_64-apple-darwin"
 raw_allocator = "system"
-sys_paths = ["$ORIGIN/lib"]
+sys_paths = [
+    "$ORIGIN/lib"
+]
 
 [[packaging_rule]]
 type = "stdlib-extensions-policy"
