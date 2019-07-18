@@ -28,6 +28,9 @@ mod pystr;
 pub use crate::config::PythonConfig;
 
 #[allow(unused_imports)]
+pub use crate::config::PythonRunMode;
+
+#[allow(unused_imports)]
 pub use crate::data::default_python_config;
 
 #[allow(unused_imports)]

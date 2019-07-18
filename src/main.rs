@@ -2,7 +2,7 @@ extern crate clap;
 
 use clap::App;
 use clap::SubCommand;
-use pyembed::{default_python_config, MainPythonInterpreter};
+use pyembed::{default_python_config, MainPythonInterpreter, PythonRunMode};
 
 fn main() {
 
@@ -26,6 +26,31 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("test") {
 
+        let code = {
+            let mut config = default_python_config();
+            config.run = PythonRunMode::Eval {
+                code: String::from("import opz.hello;opz.hello.test()") 
+            };
+
+            match MainPythonInterpreter::new(config) {
+                    Ok(mut interp) => {
+                        interp.run_as_main();
+
+                        // Return Success
+                        0
+                    }
+                    Err(msg) => {
+                        eprintln!("{}", msg);
+
+                        // Return Error
+                        1
+                    }
+            }
+            
+        };
+
+        std::process::exit(code);
+
     }
 
     // You can check for the existence of subcommands, and if found use their
@@ -37,7 +62,8 @@ fn main() {
         let code = {
             // Load the default Python configuration as derived by the PyOxidizer config
             // file used at build time.
-            let config = default_python_config();
+            let mut config = default_python_config();
+            config.run = PythonRunMode::Repl;
 
             // Construct a new Python interpreter using that config, handling any errors
             // from construction.

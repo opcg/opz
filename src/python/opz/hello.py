@@ -1,13 +1,8 @@
-
-
 def world():
     print('Hello World!')
 
 
-class Example:
-    def __init__(self, msg: str):
-        self.msg = msg
-        print('Example constructor with msg:', self.msg)
+def test():
+    import rez
 
-    def getMsg(self):
-        return self.msg
+    print(rez.module_root_path)
