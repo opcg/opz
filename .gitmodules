@@ -1,3 +1,4 @@
 [submodule "rez"]
 	path = pylibs/rez
 	url = git@github.com:opcg/rez.git
+	branch = 3.7
