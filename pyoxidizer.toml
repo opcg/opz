@@ -7,6 +7,9 @@ application_name = "opz"
 
 [[embedded_python_config]]
 raw_allocator = "jemalloc"
+sys_paths = [
+    "$ORIGIN/lib"
+]
 
 # dont_write_bytecode = true
 # ignore_environment = true
@@ -19,11 +22,8 @@ raw_allocator = "jemalloc"
 
 # Windows doesn't support jemalloc.
 [[embedded_python_config]]
-build_target = "x86_64-apple-darwin"
+build_target = "x86_64-pc-windows-msvc"
 raw_allocator = "system"
-sys_paths = [
-    "$ORIGIN/lib"
-]
 
 [[packaging_rule]]
 type = "stdlib-extensions-policy"
