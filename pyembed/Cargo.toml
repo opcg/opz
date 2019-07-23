@@ -13,12 +13,14 @@ uuid = { version = "0.7", features = ["v4"] }
 
 [dependencies.python3-sys]
 git = "https://github.com/indygreg/PyOxidizer.git"
-tag = "v0.2.0"
+#tag = "v0.2.0"
+branch = "main"
 
 [dependencies.cpython]
 git = "https://github.com/indygreg/PyOxidizer.git"
-tag = "v0.2.0"
+#tag = "v0.2.0"
 features = ["link-mode-unresolved-static", "python3-sys", "no-auto-initialize"]
+branch = "main"
 
 [features]
 default = []
