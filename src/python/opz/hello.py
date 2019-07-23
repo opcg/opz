@@ -3,6 +3,6 @@ def world():
 
 
 def test():
-    import rez
+    from rez.resolved_context import ResolvedContext
 
-    print(rez.module_root_path)
+    context = ResolvedContext(package_requests=['os'])
